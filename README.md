@@ -1,35 +1,58 @@
-# 🎨 Image API — DALL-E 3
+# image-api
 
-API de génération d'images propulsée par **DALL-E 3** (OpenAI). Haute performance, cache intelligent, streaming, et optimisation automatique des prompts.
+API de génération d'images basée sur `gpt-image-1.5` (OpenAI), déployable sur Vercel.
 
----
+## Variables d'environnement (à définir dans Vercel > Settings > Environment Variables)
 
-## ✨ Fonctionnalités
+- `OPENAI_API_KEY` — ta clé OpenAI (obligatoire)
+- `API_SECRET` — clé perso pour protéger l'endpoint (optionnelle, mais recommandée si l'API est publique)
 
-| Fonctionnalité | Description |
-|----------------|-------------|
-| 🖼️ **DALL-E 3** | Génération d'images haute qualité avec le modèle le plus avancé d'OpenAI |
-| ⚡ **Cache intelligent** | Résultats stockés 24h pour des réponses instantanées |
-| 🎨 **Styles** | `vivid` (vibrant) ou `natural` (réaliste) |
-| 📐 **Multi-tailles** | 1024x1024, 1792x1024, 1024x1792 |
-| 🚀 **Qualité HD** | Mode `hd` pour des détails encore plus fins |
-| 📡 **Streaming SSE** | Suivi en temps réel de la génération |
-| 🔧 **Amélioration auto** | Enrichissement automatique des prompts |
-| 📊 **Statistiques** | Monitoring de l'API en temps réel |
+## Endpoints
 
----
+### `GET /api/health`
 
-## 🚀 Déploiement
+Vérifie que le service tourne et que la clé OpenAI est bien configurée.
 
-### Prérequis
+### `POST /api/generate`
 
-- Node.js 18+
-- Compte OpenAI avec clé API
-- Vercel / Render / Heroku
+Headers :
+```
+Authorization: Bearer <API_SECRET>   (si API_SECRET est défini)
+Content-Type: application/json
+```
 
-### Installation
+Body :
+```json
+{
+  "prompt": "un hérisson qui code sur un ordinateur portable, style pixel art",
+  "size": "1024x1024",
+  "quality": "medium",
+  "n": 1
+}
+```
+
+- `size` : `1024x1024` | `1536x1024` | `1024x1536` | `auto`
+- `quality` : `high` | `medium` | `low` | `auto`
+- `n` : 1 à 4
+- `background` (optionnel) : `transparent` | `opaque` | `auto`
+- `output_format` (optionnel) : `png` | `jpeg` | `webp`
+
+Réponse :
+```json
+{
+  "images": [
+    { "b64_json": "iVBORw0KG...", "revised_prompt": "..." }
+  ],
+  "usage": { "total_tokens": 100 }
+}
+```
+
+`gpt-image-1.5` ne renvoie jamais d'URL, uniquement du base64 (`b64_json`). C'est normal, ce n'est pas un bug.
+
+## Déploiement
 
 ```bash
-git clone https://github.com/ton-repo/image-api
-cd image-api
-npm install
+vercel --prod
+```
+
+Ou connecte simplement le repo GitHub à Vercel et pousse sur `main`.
