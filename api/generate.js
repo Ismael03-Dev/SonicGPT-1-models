@@ -29,7 +29,9 @@ export default async function handler(req, res) {
     const model = ALLOWED_MODELS.includes(body.model) ? body.model : "flux";
     const seed = Number.isInteger(body.seed) ? body.seed : Math.floor(Math.random() * 1000000);
 
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&model=${model}&seed=${seed}&nologo=true`;
+    const enhance = body.enhance === true;
+
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&model=${model}&seed=${seed}&nologo=true&enhance=${enhance}`;
 
     try {
         const response = await fetch(url);
